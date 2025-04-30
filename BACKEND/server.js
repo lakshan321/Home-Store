@@ -1,10 +1,11 @@
+// server.js
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const authRoutes = require('./routes/authRoutes'); // Import the auth routes
 
-// Load environment variables
 dotenv.config();
 
 const app = express();
@@ -17,18 +18,21 @@ app.use(bodyParser.json());
 const URL = process.env.MONGODB_URL;
 
 mongoose.connect(URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true // ✅ FIXED Typo
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 })
 .then(() => console.log("MongoDB Connection Success!"))
 .catch((err) => console.error("MongoDB Connection Failed:", err));
 
 const connection = mongoose.connection;
 connection.once("open", () => {
-    console.log("MongoDB Database Connected Successfully!");
+  console.log("MongoDB Database Connected Successfully!");
 });
+
+// Use the routes
+app.use('/api/auth', authRoutes);  // Set route for authentication
 
 // Start Server
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
